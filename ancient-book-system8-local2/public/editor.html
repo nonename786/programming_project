@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>古籍阅览与整理 - 专业版</title>
+    <link rel="stylesheet" href="css/common.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+</head>
+<body class="editor-page">
+    <!-- 装饰背景层 -->
+    <div class="palace-border-frame"></div>
+    <div class="floating-gold-leaf"></div>
+    <div class="page-border-outer"></div>
+    <div class="corner-deco lt"></div>
+    <div class="corner-deco rb"></div>
+
+    <!-- 顶部导航栏：重新排布以确保整齐 -->
+    <div class="header">
+        <div class="btn-group">
+            <input type="file" id="fileInput" accept="image/*" style="display:none;">
+            <button onclick="document.getElementById('fileInput').click()">📜 载入单页</button>
+            <input type="file" id="pdfInput" accept="application/pdf" style="display:none;">
+            <button onclick="document.getElementById('pdfInput').click()">📚 载入整本</button>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="recognizeText()">👁️ 基础识别</button>
+            <button class="red-seal" onclick="aiRecognize()">✨ AI 深度识读</button>
+            <button class="red-seal green" onclick="toggleHistoryModal()">📜 历史档案</button>
+        </div>
+        
+        <div class="btn-group color-picker-container">
+            <button onclick="setInteractionMode('rect')">🔳 框选</button>
+             <button onclick="setInteractionMode('multi-rect')">🔲 多画框</button>  <!-- 新增 -->
+            <button onclick="clearMultiRects()">🧹 清空多框</button> <!-- 新增 -->
+            <button onclick="setInteractionMode('doodle')">🖌️ 涂鸦</button>
+            <div class="color-picker">
+                <div class="color-dot active" style="background: #8b2929;" onclick="setColor('#8b2929', this)"></div>
+                <div class="color-dot" style="background: #2a5caa;" onclick="setColor('#2a5caa', this)"></div>
+                <div class="color-dot" style="background: #45b97c;" onclick="setColor('#45b97c', this)"></div>
+            </div>
+        </div>
+
+        <div style="flex:1"></div> <!-- 占位符推开右侧按钮 -->
+
+        <div class="btn-group">
+            <button onclick="window.location.href='character-maker.html'">🔣 仓颉造字</button>
+                        <!-- 新增信箱按钮 -->
+            <button style="position: relative;" onclick="toggleInvitesModal()">
+                📩 协作信箱 <span id="msgBadge" class="msg-badge">0</span>
+            </button>
+            <button class="red-seal blue" onclick="openCollabModal()">🤝 邀请协作</button>
+            <button class="red-seal" onclick="exportXML()">📤 导出XML</button>
+        </div>
+    </div>
+
+    <!-- 主交互区 -->
+    <div class="main-area">
+        <div class="left-panel">
+            <!-- 翻页控制工具栏 -->
+        <div id="pdfControls" style="display:none; align-items:center; justify-content:center; gap:10px;">
+            <button onclick="prevPage()">上卷</button>
+            <span id="pageInfo">第 1 / ? 页</span>
+             <button onclick="nextPage()">下卷</button>
+    
+            <!-- 新增的跳转功能区 -->
+            <span style="margin-left: 15px; border-left: 1px dashed var(--border-color); padding-left: 15px;">
+              <input type="number" id="jumpPageInput" min="1" placeholder="页码" style="width: 50px; text-align: center; border: 1px solid var(--border-color); border-radius: 2px; height: 26px;">
+              <button onclick="jumpToPage()" style="height: 28px;">前往</button>
+            </span>
+        </div>
+            <canvas id="canvas"></canvas>
+        </div>
+
+<!-- 主交互区右侧面板 -->
+        <div class="right-panel" style="position: relative; overflow: hidden;">
+            <h3>识字镜 (批注档案)</h3>
+            
+            <!-- 分类标签 -->
+            <div class="ann-tabs">
+                <button id="tab-字" class="active" onclick="switchAnnTab('字')">字</button>
+                <button id="tab-句" onclick="switchAnnTab('句')">句</button>
+                <button id="tab-段" onclick="switchAnnTab('段')">段</button>
+            </div>
+
+            <!-- 列表展示区 -->
+            <div id="annotationList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+                <p style="text-align:center; color:#999; margin-top:20px;">本页暂无此体例记录</p>
+            </div>
+
+            <button class="red-seal" style="width:100%; margin-top:10px; flex-shrink:0;" onclick="startNewAnnotation()">➕ 框选后新增批注</button>
+
+            <!-- ======================================================= -->
+            <!-- 绝对不透明的悬浮表单（消灭所有重影） -->
+            <!-- ======================================================= -->
+            <div class="prop-box" id="annotationForm" style="display:none; position:absolute; top:0; left:0; right:0; bottom:0; z-index:9999; background-color:#f4ecd8 !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; padding:20px !important; margin:0 !important; box-shadow:0 -5px 25px rgba(0,0,0,0.5) !important;">
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--primary-red); padding-bottom:10px; margin-bottom:15px; flex-shrink:0;">
+                    <h4 style="margin:0; color:var(--primary-red); font-size:18px;">✍️ 落笔修撰</h4>
+                    <button onclick="closeAnnotationForm()" style="height:30px; padding:0 12px; border-radius:4px; background:#fff; border:1px solid #ccc;">🔙 放弃返回</button>
+                </div>
+
+                <!-- 存放截取小图片的位置 (加了白底框，清晰醒目) -->
+                <div style="text-align: center; margin-bottom: 15px; background: #fff !important; padding: 10px; border: 1px dashed var(--border-color); border-radius: 4px; flex-shrink:0;">
+                    <p style="margin:0 0 5px 0; font-size:12px; color:#666;">您框选的目标：</p>
+                    <img id="formCroppedImg" src="" style="max-width: 100%; max-height: 100px; display: none; margin: 0 auto; border: 1px solid var(--primary-red);" alt="截取小图" />
+                </div>
+
+                <div id="ocrResult" style="background:#fff !important; color:#333 !important; border:1px solid #ccc !important;">暂无识别内容...</div>
+                
+                <!-- 表单输入区 (所有输入框强行设为纯白背景，防透视) -->
+                <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; padding-right:5px;">
+                    <div class="form-row"><label>状态:</label>
+                        <select id="p_status" style="background:#fff !important;">
+                            <option value="待审">待审 (录入中)</option>
+                            <option value="通过">通过 (已核对)</option>
+                            <option value="重修">打回 (有误)</option>
+                        </select>
+                    </div>
+                    <div class="form-row"><label>体例:</label>
+                        <select id="p_type" style="background:#fff !important;">
+                            <option value="字">字</option><option value="句">句</option><option value="段">段</option>
+                        </select>
+                    </div>
+                    <div class="form-row"><label>原文:</label><textarea id="p_original" style="background:#fff !important;"></textarea></div>
+                    <div class="form-row"><label>简体:</label><textarea id="p_simplified" style="background:#fff !important;"></textarea></div>
+                    <div class="form-row"><label>字义:</label><textarea id="p_meaning" style="background:#fff !important;"></textarea></div>
+                    <div class="form-row"><label>注解:</label><textarea id="p_notes" style="background:#fff !important;"></textarea></div>
+                </div>
+
+                <button class="red-seal" style="width: 100%; margin-top:15px; flex-shrink:0; height:45px; font-size:16px;" onclick="saveAnnotation()">💾 落 笔 (保存)</button>
+            </div>
+        </div>
+
+    <!-- 悬浮讲解按钮 -->
+    <button class="ai-analyze-btn" onclick="qwenAnalyze()">📜 名师讲解</button>
+
+    <!-- 所有弹窗层（初始状态 display:none） -->
+    <div id="modalOverlay" class="modal-overlay"></div>
+    
+    <!-- 名师讲解弹窗 -->
+    <div id="scrollModal" class="scroll-modal">
+        <h2>名师讲解</h2>
+        <div id="qwenContent" class="ai-text"></div>
+        <button class="red-seal" onclick="closeScroll()" style="width:100%; margin-top:20px;">合上卷轴</button>
+    </div>
+
+    <!-- 协作弹窗 -->
+    <div id="collabModal" class="scroll-modal collab-skin">
+        <h2>协同编纂</h2>
+        <div class="scroll-body">
+            <p>1. 分享此链接给同僚（公开有效）：</p>
+            <div id="shareLink" class="link-box"></div>
+            <button class="red-seal blue" onclick="copyShareLink()">复制链接</button>
+            
+            <hr style="border:0; border-top:1px dashed var(--border-color); margin:20px 0;">
+            <p>2. 或者通过户籍名号发送直达信件：</p>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="inviteUsername" placeholder="输入接收方名号" style="flex:1;">
+                <button class="red-seal" onclick="sendInvite()">飞鸽传书</button>
+            </div>
+        </div>
+        <button class="red-seal" onclick="closeCollab()" style="width:100%; margin-top:20px;">关闭</button>
+    </div>
+
+    <!-- 信箱弹窗 -->
+    <div id="invitesModal" class="scroll-modal history-skin">
+        <h2>同僚信件 (待办)</h2>
+        <div id="invitesList" class="scroll-body" style="display:flex; flex-direction:column; gap:10px;">
+            <p style="text-align:center; color:#999;">暂无未读信件</p>
+        </div>
+        <button class="red-seal" onclick="toggleInvitesModal()" style="width:100%; margin-top:20px;">合上</button>
+    </div>
+
+    <!-- 历史弹窗 (加宽以支持左右分栏显示) -->
+    <div id="historyModal" class="scroll-modal history-skin" style="width: 800px; max-width: 90vw; height: 600px;">
+        <h2>历史档案</h2>
+        <div class="history-tabs" style="text-align: center; margin-bottom: 15px;">
+            <button id="tab-ann" onclick="showHistoryTab('ann')">批注</button>
+            <button id="tab-char" onclick="showHistoryTab('char')">造字</button>
+        </div>
+        
+        <!-- 新增：左右分栏布局 -->
+        <div class="history-content-split" style="display: flex; gap: 20px; height: calc(100% - 130px);">
+            <!-- 左侧：历史列表栏 -->
+            <div id="historyList" class="scroll-body-list" style="flex: 1; border: 1px solid var(--border-color); border-radius: 4px; padding: 10px; overflow-y: auto; background: rgba(255,255,255,0.5);">
+            </div>
+            
+            <!-- 右侧：详情展示栏 (显示小图和详细文字) -->
+            <div id="historyDetail" style="flex: 1.2; border: 1px solid var(--primary-red); border-radius: 4px; padding: 15px; overflow-y: auto; background: rgba(255,255,255,0.8); box-shadow: inset 0 0 10px rgba(0,0,0,0.05);">
+                <p style="color: #999; text-align: center; margin-top: 50px;">请在左侧点击一条记录以查看详情</p>
+            </div>
+        </div>
+
+        <button class="red-seal" onclick="toggleHistoryModal()" style="width:100%; margin-top:20px; flex-shrink: 0;">合上</button>
+    </div>
+
+    <script src="js/editor.js"></script>
+</body>
+</html>

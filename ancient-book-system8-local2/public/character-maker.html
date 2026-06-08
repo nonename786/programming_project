@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>仓颉造字台 - 异体字提取</title>
+  <link rel="stylesheet" href="css/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body { padding: 30px; display: flex; flex-direction: column; gap: 20px; height: 100vh; box-sizing: border-box; }
+    
+    /* 核心布局 */
+    .top-section { display: flex; gap: 20px; flex: 1; min-height: 0; }
+    
+    /* 左侧：原图区 */
+    .source-area { flex: 2; border: 2px solid var(--text-ink); background: #fff; display: flex; flex-direction: column; overflow: hidden; }
+    .canvas-container { flex: 1; overflow: auto; background: #eee; position: relative; }
+    .toolbar { padding: 10px; background: var(--panel-bg); border-bottom: 1px solid var(--text-ink); display: flex; gap: 10px; }
+    
+    /* 右侧：记录区 */
+    .record-area { flex: 1; border: 2px solid var(--text-ink); background: var(--panel-bg); display: flex; flex-direction: column; padding: 15px; }
+    .record-box { flex: 1; border: 1px dashed var(--text-ink); display: flex; align-items: center; justify-content: center; background: #fff; margin-top: 10px; overflow: hidden; }
+    #previewImg { max-width: 100%; max-height: 100%; border: 1px solid #ccc; display: none; }
+
+    /* 下方：表单区 */
+    .form-area { background: var(--panel-bg); border: 2px solid var(--text-ink); padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .full-row { grid-column: span 2; }
+    
+    canvas { cursor: crosshair; }
+  </style>
+</head>
+<body>
+  <!-- 装饰边框 -->
+  <div class="page-border-outer"></div>
+  <div class="page-border-inner"></div>
+
+  <div style="z-index: 100;">
+    <button onclick="window.history.back()">🔙 卷宗回退</button>
+  </div>
+
+  <div class="top-section">
+    <!-- 左侧选字区 -->
+    <div class="source-area">
+        <div class="toolbar">
+            <button id="btnSelect" onclick="toggleSelectMode()">🖱️ 仓颉选字</button>
+            <button class="red-seal" onclick="saveSelection()">💾 保存选字</button>
+            <span style="font-size: 14px; color: #666; align-self: center;">(在图中拖动鼠标框选异体字)</span>
+        </div>
+        <div class="canvas-container">
+            <canvas id="mainCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- 右侧记录区 -->
+    <div class="record-area">
+        <h3 style="margin: 0;">🖼️ 图片记录</h3>
+        <p style="font-size: 12px;">此处显示截取的异体字样：</p>
+        <div class="record-box" id="recordBox">
+            <img id="previewImg" alt="选字预览">
+            <span id="placeholder">尚未选字</span>
+        </div>
+    </div>
+  </div>
+
+  <!-- 下方信息区 -->
+  <div class="form-area">
+    <div>
+      <label>分配 Unicode 编码:</label>
+      <input type="text" id="c_unicode" placeholder="例如: U+20000">
+    </div>
+    <div>
+      <label>字形描述 / 拼音:</label>
+      <input type="text" id="c_name" placeholder="请输入字名或拼音">
+    </div>
+    <div class="full-row">
+      <label>字义考究:</label>
+      <textarea id="c_desc" style="height: 60px;" placeholder="请输入该字的考证、来源或含义..."></textarea>
+    </div>
+    <button class="red-seal full-row" style="height: 45px; font-size: 18px;" onclick="makeCharacter()">入 库 (建立映射)</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const previewImg = document.getElementById('previewImg');
+    let sourceImg = new Image();
+    let isDrawing = false, startX, startY, currentRect = null;
+    let croppedBase64 = ""; // 存储截取的图片数据
+
+    // 页面初始化：加载图片
+    window.onload = () => {
+        const savedImg = localStorage.getItem('temp_character_img');
+        if (!savedImg) {
+            alert("未检测到古籍图片，请先在主界面载入。");
+            return;
+        }
+        //sourceImg.src = savedImg;
+        sourceImg=new Image();
+        sourceImg.onload = () => {
+            canvas.width = sourceImg.width;
+            canvas.height = sourceImg.height;
+            ctx.clearRect(0,0,canvas.wdith,canvas.height)
+            ctx.drawImage(sourceImg, 0, 0);
+             console.log("造字台已载入最新页面快照");
+        };
+        sourceImg.src = savedImg;
+    };
+
+    // 交互逻辑
+    canvas.addEventListener('mousedown', e => {
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        startX = e.offsetX;
+        startY = e.offsetY;
+    });
+
+    canvas.addEventListener('mousemove', e => {
+        if (!isDrawing) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(sourceImg, 0, 0);
+        
+        const curX = e.offsetX;
+        const curY = e.offsetY;
+        const w = curX - startX;
+        const h = curY - startY;
+        
+        ctx.strokeStyle = '#8b2929';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(startX, startY, w, h);
+        currentRect = { x: startX, y: startY, w, h };
+    });
+
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+
+    // 保存选字逻辑
+    function saveSelection() {
+        if (!currentRect || Math.abs(currentRect.w) < 5) {
+            alert("请先在图中框选字样");
+            return;
+        }
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = Math.abs(currentRect.w);
+        tempCanvas.height = Math.abs(currentRect.h);
+        const tCtx = tempCanvas.getContext('2d');
+
+        tCtx.drawImage(sourceImg, 
+            currentRect.x, currentRect.y, currentRect.w, currentRect.h,
+            0, 0, tempCanvas.width, tempCanvas.height
+        );
+
+        croppedBase64 = tempCanvas.toDataURL('image/png');
+        previewImg.src = croppedBase64;
+        previewImg.style.display = 'block';
+        document.getElementById('placeholder').style.display = 'none';
+        alert("选字已记录！");
+    }
+
+// 提交入库 (造字保存逻辑)
+async function makeCharacter() {
+    const unicode = document.getElementById('c_unicode').value;
+    const name = document.getElementById('c_name').value;
+    const desc = document.getElementById('c_desc').value;
+
+    if (!unicode || !croppedBase64) {
+        alert("请确保已分配编码并保存了选字图片");
+        return;
+    }
+
+    try {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+        await axios.post('/api/characters', {
+            unicode_code: unicode,
+            character_name: name,
+            description: desc,
+            // 恢复使用你原来的名称 character_image
+            character_image: croppedBase64 
+        });
+        alert('📜 异体造字已成功收入典籍库！');
+        window.history.back();
+    } catch(e) { 
+        alert('入库失败：' + (e.response?.data?.error || e.message)); 
+    }
+}
+
+    function toggleSelectMode() {
+        alert("请在左侧图中拖动鼠标进行选字");
+    }
+  </script>
+</body>
+</html>

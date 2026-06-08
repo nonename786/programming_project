@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AncientBookSystem>
+  <DocumentInfo>
+    <ID>91</ID>
+    <Title><![CDATA[3 (4).png]]></Title>
+    <ExportDate>2026/3/26 16:27:12</ExportDate>
+    <FileType>image/png</FileType>
+  </DocumentInfo>
+  <Annotations count="0">
+  </Annotations>
+  <CustomCharacters count="4">
+    <Character>
+      <Unicode>500</Unicode>
+      <Name><![CDATA[力]]></Name>
+      <Description><![CDATA[力量]]></Description>
+      <ImageBase64>
+<![CDATA[]]>
+      </ImageBase64>
+    </Character>
+    <Character>
+      <Unicode>1</Unicode>
+      <Name><![CDATA[a]]></Name>
+      <Description><![CDATA[]]></Description>
+      <ImageBase64>
+<![CDATA[]]>
+      </ImageBase64>
+    </Character>
+    <Character>
+      <Unicode>8955</Unicode>
+      <Name><![CDATA[zu]]></Name>
+      <Description><![CDATA[最古老]]></Description>
+      <ImageBase64>
+<![CDATA[data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAA8CAYAAADrG90CAAADR0lEQVR4AeyaCW7DIBAAPf3/n9OuLRqMAXMt4IRIG2BvBpLGUn9e69WVwM+2Xl0JLOBdcW/bAr6AdybQudy64d8MHNiAzgj6lpvihgMn0HBe90WiW00FOBzAgNvuIewDYdtt4kkdioED+62E62jvFa52eOtsX405vGvBea5R7y5nMfC7xE+ww3EAPXtNAu5r6O95eDMidjNvPUpuOMBA/ijxM0kxcHsTAtler3mYQBPg4fRtLJoHqpnbt/tHAAd8ve86ARaS3WGyt+mAA5dfPyFmAjpkS9HXxqfUcH2mAg64/amsBbSISvKbpFnAgcvtg0N3UydohiMeCPp8kiELeGzjQPAwIGyL5fxEWxbwXh9DqWPk06BnAZfNGxD2KHpbbJvMbZs999lcnbu24584zwaeskk4vkJiviGQQCzs8bYmwHd4HhRwwAvZPSG7Co64ffFhb02Ax5iAHx749bFcrg3COSBsc/P0XDcDHrrFIX2rTQLeX0et8rfO0wx468bsfNqHZtfSnncDngMt1Vf8fKINrSZ/N+C+JgGfulonh1CdRClBN+BQDhfKY11uow+jG3B347XrO3B39tr6pfGPBQ7xWw9xeymw2rjHAq/d+Kj4KYGD3u0Evdwph9gZeEpL2/7fAGmez/OaEvjzMKZ3/GjggPexHkgn0NlzKPDQTzeYF1jt+QwFDjT5vpaDs6UWima8KnCBEGte7FB+myVexK3h07k+o9aqwEdtaua6qsCh/PbODK2mN1Xgd41B/wMZ/XWjCnz05u4OfIRdFXjphkYdFOh/4oYDd+G+Xq/Sc0qKgzNU4P/hSRIAMqhJM+CQ36iBLaMRtZ16EoO/Z/DrPSmyVU2Aw7VBAZjbDbDfNomDYw7I0ivgt4Ffb5IA/3WMzh5LerfjY/Nq4MAlf0nD8M4D7/kluaMAdnjwHh2XqZbVwN3dlMB2c2ispS+RWG6xi8R8am1VwIFT/ZpmJVZTTKOxGsZHcywGDu1ga25wttxFwCEPNpz9BYLcNBm/TbKAA/sfKBtSCrgUHzvnJ8+zgBsQAtCI0d2N4i8+MorI/BslC7iAEikFVRNbWnO2uCzgMzX/1F4W8M4nt4Av4J0JdC63bnhn4L8AAAD//9YD3sgAAAAGSURBVAMAf5MrNsOhtf0AAAAASUVORK5CYII=]]>
+      </ImageBase64>
+    </Character>
+    <Character>
+      <Unicode>1659</Unicode>
+      <Name><![CDATA[xia]]></Name>
+      <Description><![CDATA[下方]]></Description>
+      <ImageBase64>
+<![CDATA[data:image/png;base64,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]]>
+      </ImageBase64>
+    </Character>
+  </CustomCharacters>
+</AncientBookSystem>

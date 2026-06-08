@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AncientBookSystem>
+  <DocumentInfo>
+    <Title>未命名</Title>
+    <ExportDate>2026/3/24 17:19:00</ExportDate>
+  </DocumentInfo>
+  <Annotations>
+  </Annotations>
+  <CustomCharacters>
+    <Character>
+      <Unicode>500</Unicode>
+      <Name>力</Name>
+      <Description>力量</Description>
+      <ImageBase64><![CDATA[]]></ImageBase64>
+    </Character>
+    <Character>
+      <Unicode>1</Unicode>
+      <Name>a</Name>
+      <Description></Description>
+      <ImageBase64><![CDATA[]]></ImageBase64>
+    </Character>
+  </CustomCharacters>
+</AncientBookSystem>

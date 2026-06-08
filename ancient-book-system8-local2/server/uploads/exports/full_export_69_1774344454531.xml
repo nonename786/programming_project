@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AncientBookSystem>
+  <DocumentInfo>
+    <Title>3 (4).png</Title>
+    <ExportDate>2026/3/24 17:27:34</ExportDate>
+  </DocumentInfo>
+  <Annotations>
+  </Annotations>
+  <CustomCharacters>
+    <Character>
+      <Unicode>500</Unicode>
+      <Name>力</Name>
+      <Description>力量</Description>
+      <ImageBase64><![CDATA[]]></ImageBase64>
+    </Character>
+    <Character>
+      <Unicode>1</Unicode>
+      <Name>a</Name>
+      <Description></Description>
+      <ImageBase64><![CDATA[]]></ImageBase64>
+    </Character>
+    <Character>
+      <Unicode>8955</Unicode>
+      <Name>zu</Name>
+      <Description>最古老</Description>
+      <ImageBase64><![CDATA[data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAAA8CAYAAADrG90CAAADR0lEQVR4AeyaCW7DIBAAPf3/n9OuLRqMAXMt4IRIG2BvBpLGUn9e69WVwM+2Xl0JLOBdcW/bAr6AdybQudy64d8MHNiAzgj6lpvihgMn0HBe90WiW00FOBzAgNvuIewDYdtt4kkdioED+62E62jvFa52eOtsX405vGvBea5R7y5nMfC7xE+ww3EAPXtNAu5r6O95eDMidjNvPUpuOMBA/ijxM0kxcHsTAtler3mYQBPg4fRtLJoHqpnbt/tHAAd8ve86ARaS3WGyt+mAA5dfPyFmAjpkS9HXxqfUcH2mAg64/amsBbSISvKbpFnAgcvtg0N3UydohiMeCPp8kiELeGzjQPAwIGyL5fxEWxbwXh9DqWPk06BnAZfNGxD2KHpbbJvMbZs999lcnbu24584zwaeskk4vkJiviGQQCzs8bYmwHd4HhRwwAvZPSG7Co64ffFhb02Ax5iAHx749bFcrg3COSBsc/P0XDcDHrrFIX2rTQLeX0et8rfO0wx468bsfNqHZtfSnncDngMt1Vf8fKINrSZ/N+C+JgGfulonh1CdRClBN+BQDhfKY11uow+jG3B347XrO3B39tr6pfGPBQ7xWw9xeymw2rjHAq/d+Kj4KYGD3u0Evdwph9gZeEpL2/7fAGmez/OaEvjzMKZ3/GjggPexHkgn0NlzKPDQTzeYF1jt+QwFDjT5vpaDs6UWima8KnCBEGte7FB+myVexK3h07k+o9aqwEdtaua6qsCh/PbODK2mN1Xgd41B/wMZ/XWjCnz05u4OfIRdFXjphkYdFOh/4oYDd+G+Xq/Sc0qKgzNU4P/hSRIAMqhJM+CQ36iBLaMRtZ16EoO/Z/DrPSmyVU2Aw7VBAZjbDbDfNomDYw7I0ivgt4Ffb5IA/3WMzh5LerfjY/Nq4MAlf0nD8M4D7/kluaMAdnjwHh2XqZbVwN3dlMB2c2ispS+RWG6xi8R8am1VwIFT/ZpmJVZTTKOxGsZHcywGDu1ga25wttxFwCEPNpz9BYLcNBm/TbKAA/sfKBtSCrgUHzvnJ8+zgBsQAtCI0d2N4i8+MorI/BslC7iAEikFVRNbWnO2uCzgMzX/1F4W8M4nt4Av4J0JdC63bnhn4L8AAAD//9YD3sgAAAAGSURBVAMAf5MrNsOhtf0AAAAASUVORK5CYII=]]></ImageBase64>
+    </Character>
+  </CustomCharacters>
+</AncientBookSystem>

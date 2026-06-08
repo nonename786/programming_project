@@ -1,0 +1,515 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+
+:root {
+  --bg-paper: #f4ecd8; /* 宣纸底色 */
+  --text-ink: #2c1f16; /* 墨色 */
+  --primary-red: #8b2929; /* 印章红 */
+  --border-color: #cbb99d;
+  --panel-bg: rgba(244, 236, 216, 0.95);
+  /* 【修改点】将面板背景从 0.95 改为 0.5，让山水画透过来 */
+  --panel-bg: rgba(244, 236, 216, 0.15);
+}
+
+/* =========================================
+   1. 全局背景与底层装饰
+   ========================================= */
+body {
+    background-color: var(--bg-paper);
+    background-image: 
+        url("https://www.transparenttextures.com/patterns/natural-paper.png"),
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 100 100' opacity='0.1'><path d='M10,50 Q25,25 50,50 T90,50' fill='none' stroke='%238b4513' stroke-width='0.5'/></svg>");
+    font-family: 'Noto Serif SC', 'KaiTi', 'STKaiti', serif;
+    color: var(--text-ink);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow: hidden; /* 防止整个页面出现滚动条，全靠内部面板自适应 */
+    position: relative;
+    z-index: 1;
+}
+
+/* 【修改部分 1】：编写古籍页面专用青绿山水背景 */
+body.editor-page {
+    background-color: #f4ecd8;
+    background-image:
+        /* 第1层：极轻微的暖色遮罩，保证左右面板阅读不刺眼 */
+        linear-gradient(rgba(246, 243, 239, 0.3), rgba(246, 243, 239, 0.3)),
+        /* 第2层：你提供的青绿山水图片 (请确保路径与你保存的一致，这里假设在images下) */
+        url("../images/landscape-bg.jpg"),
+        /* 第3层：保留原有的宣纸纹理，增加纸张质感 */
+        url("https://www.transparenttextures.com/patterns/natural-paper.png");
+    
+    background-repeat: no-repeat, no-repeat, repeat;
+    /* 位置调整：将图片垂直居中偏上(35%)，这样在电脑宽屏上能显示出最好看的群山部分 */
+    background-position: center center, center 35%, left top;
+    /* 尺寸调整：cover保证图片铺满整个屏幕，不会留白 */
+    background-size: cover, cover, auto;
+    background-attachment: fixed, fixed, fixed;
+}
+/* 中央暗龙纹水印 */
+body::before {
+    content: "";
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background-image: url('https://img.icons8.com/ios/500/8b4513/chinese-circle-ornament.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: -1;
+}
+
+body.editor-page::before {
+    content: none;
+}
+
+/* =========================================
+   2. 页面骨架布局 (上下分布、左右分栏)
+   ========================================= */
+
+/* 顶部导航栏 */
+.header {
+    height: 70px;
+    padding: 0 50px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(244,236,216,0.85);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-bottom: 2px solid var(--primary-red);
+    box-sizing: border-box;
+    position: relative;
+    z-index: 100;
+}
+
+/* 主交互区容器 */
+.main-area {
+    display: flex;
+    height: calc(100vh - 70px);
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 20px 30px;
+    gap: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+/* 左侧面板（画板展示区） */
+.left-panel {
+    flex: 1; /* 撑满剩余空间 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--panel-bg) !important;
+    /* 【核心新增】毛玻璃效果：让背后的山水模糊透出，非常有高级感 */
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    /* 边框也调成半透明，避免生硬的线条感 */
+    border: 1px solid rgba(139, 41, 41, 0.15) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden; /* 防止撑破容器 */
+    min-height:0;
+    min-width:0;
+}
+
+/* 画布限制，使其能完整容纳图片 */
+#canvas {
+    max-width: 100%;
+    max-height:100%;
+    flex-shrink:1;
+    object-fit: contain; /* 保证图片等比缩放完整显现 */
+    display: block;
+    margin: 0 auto;
+    cursor: crosshair;
+}
+
+/* 右侧面板（识字镜及属性编辑） */
+.right-panel {
+    width: 380px;
+    flex-shrink: 0;
+    background: var(--panel-bg) !important;
+    /* 【核心新增】毛玻璃效果 */
+    /* 【修改】强化模糊到 12px，这样背景透过来会有一种梦幻的渐变感 */
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    
+    /* 边框也调成半透明，避免生硬的线条感 */
+    border: 1px solid rgba(139, 41, 41, 0.15) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow-y: hidden; /* 让内部的表单区自己去滚动 */
+    z-index: 10;
+}
+
+.right-panel h3 {
+    margin: 0;
+    color: var(--primary-red);
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 10px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* =========================================
+   3. 控件与组件样式
+   ========================================= */
+
+/* 顶部控制组 */
+.btn-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-right: 1px solid var(--border-color);
+    padding-right: 15px;
+}
+.btn-group:last-child { border-right: none; }
+
+/* 基础按钮 */
+button {
+    white-space: nowrap;
+    height: 36px;
+    line-height: 1;
+    border: 1px solid var(--text-ink);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--text-ink);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    padding: 0 12px;
+}
+button:hover {
+    background: var(--text-ink);
+    color: var(--bg-paper);
+}
+
+/* 印章风格特色按钮 */
+button.red-seal {
+    background-color: var(--primary-red) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: bold;
+}
+button.red-seal.blue { background-color: #2a5caa !important; }
+button.red-seal.green { background-color: #45b97c !important; }
+button.red-seal:hover {
+    opacity: 0.9;
+    transform: scale(1.03);
+}
+
+/* 画笔颜色选择器 */
+.color-picker {
+    display: flex;
+    gap: 8px;
+    margin-left: 5px;
+}
+.color-dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.2s;
+}
+.color-dot.active {
+    border-color: var(--text-ink);
+    transform: scale(1.2);
+}
+
+/* =========================================
+   4. 右侧识别与表单结构 (全新优化)
+   ========================================= */
+
+/* 【修改核心1】：识字镜框缩小并固定大小，不随内容扩张 */
+#ocrResult {
+    background-color: rgba(255, 255, 255, 0.1)!important;
+    border: 1px solid rgba(139,41,41,0.3);
+    backdrop-filter:blur(4px);
+    height: 110px; /* 强制固定高度，变小 */
+    flex-shrink: 0; /* 防止被挤压 */
+    overflow-y: auto; /* 超出内容则内部出现滚动条 */
+    padding: 10px 15px;
+    font-size: 15px;
+    line-height: 1.6;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.prop-box {
+    background-color: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(139,41,41,0.2);
+    backdrop-filter:blur(4px);
+    box-shadow: inset 0 0 10px rgba(218, 165, 32, 0.08);
+    padding: 15px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1; /* 撑满右下方的剩余空间 */
+    overflow-y: auto; /* 表单太长时可以自己滚动 */
+}
+
+.form-row {
+    display: flex;
+    align-items: flex-start; /* 改为顶部对齐，方便多行输入框展开 */
+    gap: 10px;
+}
+
+.form-row label {
+    width: 45px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--primary-red);
+    text-align: right;
+    margin-top: 8px; /* 让标签和输入框内的文字对齐 */
+}
+
+/* 输入框和文本域统一改版：增加明显的白底和外框，凸显面积 */
+input, select, textarea {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.15)!important;
+    border: 1px solid rgba(203,185,157,0.3);
+    color: var(--text-ink);
+    font-family: inherit;
+    font-size: 15px;
+    padding: 8px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+input:focus, select:focus, textarea:focus {
+    background: rgba(255, 255, 255, 0.4) !important;
+    outline: none;
+}
+
+/* 【修改核心2】：原文、简体的初始面积增大，并支持自适应撑高 */
+#p_original, #p_simplified {
+    min-height: 50px; /* 增大了初始显示面积 */
+    resize: vertical; /* 允许鼠标拖拽右下角放大 */
+    field-sizing: content; /* 新特性：随字数增多自动长高 (支持现代浏览器) */
+}
+
+/* 下方原本的字义、注解多行文本框 */
+textarea { 
+    min-height: 80px; 
+    resize: vertical; 
+    field-sizing: content;
+}
+
+/* 翻页控制 */
+#pdfControls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+/* =========================================
+   5. 底部悬浮按钮与所有弹窗样式
+   ========================================= */
+
+/* 悬浮唤出按钮 */
+.ai-analyze-btn {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 220px;
+    border-radius: 50px;
+    height: 45px;
+    font-size: 16px;
+    box-shadow: 0 5px 15px rgba(139, 41, 41, 0.3);
+}
+
+/* 弹窗默认隐藏，触发时显示 */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+    display: none;
+}
+
+/* 通用卷轴弹窗（名师讲解、历史档案共用） */
+.scroll-modal {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    max-width: 90vw;
+    max-height: 80vh; /* 弹窗最大高度永远不超过屏幕的 80% */
+    background: var(--bg-paper);
+    border: 3px double var(--primary-red);
+    border-radius: 6px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    z-index: 10001;
+    padding: 30px;
+    display: none; 
+    flex-direction: column; /* 纵向弹性排列 */
+}
+
+/* 【关键修复 1】：保证标题永远不被压缩 */
+.scroll-modal h2 {
+    text-align: center;
+    color: var(--primary-red);
+    margin-top: 0;
+    border-bottom: 2px solid var(--primary-red);
+    padding-bottom: 15px;
+    flex-shrink: 0; 
+}
+
+/* 【关键修复 2】：保证底部所有的按钮永远不被挤压出界 */
+.scroll-modal > button {
+    flex-shrink: 0;
+    margin-top: 20px;
+}
+
+/* 【关键修复 3】：中间的 AI 文本展示区 */
+#qwenContent.ai-text {
+    flex: 1; /* 自动撑满中间剩余的所有空间 */
+    overflow-y: auto; /* 超出则在内部出现滚动条！绝对不撑破弹窗！ */
+    padding-right: 15px; /* 给滚动条留一点点距离，防止文字贴边 */
+    max-height: 50vh; /* 双重保险：就算 JS 写错了，这里也会强制限制它的高度 */
+    
+    font-size: 16px;
+    line-height: 1.8;
+    color: #1a0f05;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* 优化一下滚动条样式，让它更有古籍感 (兼容 Chrome/Edge/Safari) */
+#qwenContent.ai-text::-webkit-scrollbar {
+    width: 6px;
+}
+#qwenContent.ai-text::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+}
+
+.ai-text, .scroll-body, .scroll-body-list {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #1a0f05;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.link-box {
+    background: rgba(0,0,0,0.05);
+    padding: 12px;
+    border: 1px dashed var(--primary-red);
+    margin: 15px 0;
+    font-size: 14px;
+    word-break: break-all;
+    text-align: center;
+}
+
+/* 历史记录标签 */
+.history-tabs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+/* =========================================
+   6. 繁华优美古典装饰层
+   ========================================= */
+
+.page-border-outer {
+    position: fixed; top: 12px; bottom: 12px; left: 12px; right: 12px;
+    border: 3px double #8b2929;
+    pointer-events: none; z-index: 9998;
+}
+
+.corner-deco {
+    position: fixed; width: 180px; height: 180px;
+    z-index: 9999; opacity: 0.8; pointer-events: none;
+    background-size: contain; background-repeat: no-repeat;
+}
+.lt { top: 25px; left: 25px; background-image: url('https://img.icons8.com/color/200/chinese-ornament.png'); }
+.rb { bottom: 25px; right: 25px; transform: rotate(180deg); background-image: url('https://img.icons8.com/color/200/chinese-ornament.png'); }
+
+.palace-border-frame {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none; z-index: 9996; 
+    box-shadow: inset 0 0 100px rgba(139, 41, 41, 0.2), inset 0 0 40px rgba(218, 165, 32, 0.3);
+}
+.palace-border-frame::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23d4af37' stroke-width='1.5' stroke-opacity='0.6'%3E%3Ccircle cx='40' cy='40' r='30'/%3E%3Ccircle cx='0' cy='40' r='30'/%3E%3Ccircle cx='80' cy='40' r='30'/%3E%3Ccircle cx='40' cy='0' r='30'/%3E%3Ccircle cx='40' cy='80' r='30'/%3E%3C/g%3E%3C/svg%3E");
+    -webkit-mask-image: radial-gradient(ellipse at 50% 50%, transparent 60%, black 100%);
+    mask-image: radial-gradient(ellipse at 50% 50%, transparent 60%, black 100%);
+}
+
+.floating-gold-leaf {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: 9997;
+    background-image: radial-gradient(circle, rgba(218, 165, 32, 0.8) 1.5px, transparent 1.5px);
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
+    opacity: 0.4;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 50%, transparent 70%, black 100%);
+    mask-image: radial-gradient(ellipse at 50% 50%, transparent 70%, black 100%);
+    animation: floatGold 6s infinite ease-in-out alternate;
+}
+
+@keyframes floatGold {
+    0% { transform: scale(1); opacity: 0.2; }
+    100% { transform: scale(1.02); opacity: 0.6; }
+}
+
+/* 历史记录列表项悬停效果 */
+.history-item:hover {
+    background-color: rgba(139, 41, 41, 0.08) !important;
+}
+/* 标签激活状态 */
+.history-tabs button.active {
+    background: var(--primary-red) !important;
+    color: white !important;
+}
+
+
+/* --- 新增：批注库列表与协作信箱样式 --- */
+.ann-tabs {
+    display: flex; gap: 5px; margin-bottom: 10px;
+}
+.ann-tabs button {
+    flex: 1; border-color: var(--border-color); color: var(--text-ink);
+}
+.ann-tabs button.active {
+    background: var(--primary-red); color: white; border-color: var(--primary-red);
+}
+.ann-item {
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 4px; padding: 10px; cursor: pointer; transition: 0.2s;
+}
+.ann-item:hover, .ann-item.active {
+    background: rgba(139, 41, 41, 0.1); border-color: var(--primary-red);
+}
+.msg-badge {
+    position: absolute; top: -5px; right: -5px; background: red; color: white;
+    font-size: 12px; border-radius: 50%; padding: 2px 6px; display: none;
+}

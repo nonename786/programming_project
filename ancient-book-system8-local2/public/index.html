@@ -1,0 +1,95 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>古籍检索系统 - 登入</title>
+  <link rel="stylesheet" href="css/common.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    .auth-container { width: 400px; margin: 15vh auto; padding: 40px; border: 2px solid var(--text-ink); background: var(--panel-bg); text-align: center; position: relative; }
+    .auth-container::before { content: '典'; position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-size: 40px; background: var(--bg-paper); padding: 0 10px; color: var(--primary-red); }
+    .form-group { margin-bottom: 25px; text-align: left; }
+    .title { font-size: 28px; font-weight: bold; margin-bottom: 30px; letter-spacing: 4px; }
+    .switch-text { margin-top: 15px; font-size: 14px; cursor: pointer; text-decoration: underline; color: var(--primary-red); }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="title">古籍文献检索系统</div>
+
+    <!-- 登录模块 -->
+    <div id="login-box">
+      <div class="form-group">
+        <label>名号 (Username)</label>
+        <input type="text" id="username" placeholder="请输入用户名">
+      </div>
+      <div class="form-group">
+        <label>口令 (Password)</label>
+        <input type="password" id="password" placeholder="请输入密码">
+      </div>
+      <button onclick="login()" style="width: 100%; margin-top: 10px;">入 阁 (登入)</button>
+      <div class="switch-text" onclick="toggleMode('register')">无户籍？登记造册</div>
+    </div>
+
+    <!-- 注册模块 -->
+    <div id="register-box" style="display: none;">
+      <div class="form-group">
+        <label>名号 (Username)</label>
+        <input type="text" id="reg_username" placeholder="设定用户名">
+      </div>
+      <div class="form-group">
+        <label>飞鸽传书 (Email)</label>
+        <input type="email" id="reg_email" placeholder="输入邮箱地址">
+      </div>
+      <div class="form-group">
+        <label>口令 (Password)</label>
+        <input type="password" id="reg_password" placeholder="至少6位">
+      </div>
+      <div class="form-group">
+        <label>确认口令</label>
+        <input type="password" id="reg_confirm" placeholder="再次输入密码">
+      </div>
+      <button onclick="register()" class="red-seal" style="width: 100%; margin-top: 10px;">造 册 (注册)</button>
+      <div class="switch-text" onclick="toggleMode('login')">已有户籍？返回入阁</div>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleMode(mode) {
+      document.getElementById('login-box').style.display = (mode === 'login') ? 'block' : 'none';
+      document.getElementById('register-box').style.display = (mode === 'register') ? 'block' : 'none';
+    }
+    
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      try {
+        const res = await axios.post('/api/auth/login', { username, password });
+        localStorage.setItem('token', res.data.token);
+        window.location.href = 'editor.html';
+      } catch (err) { 
+        alert(err.response?.data?.error || '登录失败，请检查账号密码'); 
+      }
+    }
+
+    async function register() {
+      const username = document.getElementById('reg_username').value;
+      const email = document.getElementById('reg_email').value;
+      const password = document.getElementById('reg_password').value;
+      const confirmPassword = document.getElementById('reg_confirm').value;
+
+      try {
+        const res = await axios.post('/api/auth/register', { username, email, password, confirmPassword });
+        alert('🎉 登记成功！已自动为您发放通关令牌。');
+        localStorage.setItem('token', res.data.token);
+        window.location.href = 'editor.html'; // 注册成功直接跳转
+      } catch (err) { 
+        alert(err.response?.data?.error || '注册失败，请检查输入的信息'); 
+      }
+    }
+  </script>
+</body>
+</html>
