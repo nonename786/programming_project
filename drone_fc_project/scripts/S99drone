@@ -1,0 +1,32 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        echo "Starting drone flight controller..."
+        /root/start_drone.sh &
+        ;;
+
+    stop)
+        echo "Stopping drone flight controller..."
+        /root/stop_drone.sh
+        ;;
+
+    restart)
+        echo "Restarting drone flight controller..."
+        /root/stop_drone.sh
+        sleep 1
+        /root/start_drone.sh &
+        ;;
+
+    status)
+        echo "Drone flight controller status:"
+        ps | grep drone_fc | grep -v grep
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+
+exit 0

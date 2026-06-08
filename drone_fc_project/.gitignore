@@ -1,0 +1,5 @@
+build/
+drone_fc
+*.o
+*.log
+*.csv
