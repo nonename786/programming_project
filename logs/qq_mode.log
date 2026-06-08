@@ -1,0 +1,159 @@
+2026-04-23 17:59:05 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-04-23 17:59:05 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-04-23 17:59:05 | INFO     | __main__:run_qq:227 | 🚀 QQ Bot 启动中...
+2026-04-23 17:59:05 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-04-23 17:59:05 | INFO     | gateway.qq_client:connect:42 | ✅ OneBot 长连接建立成功
+2026-04-23 17:59:05 | INFO     | gateway.qq_client:start_listener:52 | ✅ QQ 事件监听任务已启动
+2026-04-23 17:59:05 | INFO     | gateway.qq_bot:start:315 | ✅ QQ Bot 已启动
+2026-04-23 17:59:05 | INFO     | gateway.qq_client:listen_forever:153 | 👂 开始监听 QQ 消息事件...
+2026-04-23 17:59:32 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 2248611437
+2026-04-23 17:59:33 | INFO     | gateway.qq_client:send_private_msg:104 | ✅ 私聊消息发送成功
+2026-04-23 17:59:40 | INFO     | gateway.qq_client:_handle_event:137 | 📩 收到私聊消息，来自 2727695997: 你是谁
+2026-04-23 17:59:40 | INFO     | gateway.qq_session_hub:get_agent:55 | ✅ 已创建 QQ 会话 Agent: private:2727695997
+2026-04-23 17:59:43 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 2727695997
+2026-04-23 17:59:58 | ERROR    | gateway.qq_bot:handle_incoming_message:284 | ❌ 私聊自动回复失败: 
+2026-04-23 18:00:11 | INFO     | __main__:qq_terminal_loop:136 | 👋 收到退出指令
+2026-04-23 18:00:11 | INFO     | gateway.qq_client:close:68 | 👋 OneBot 连接已关闭
+2026-04-23 18:00:11 | INFO     | __main__:run_qq:234 | 👋 QQ Bot 已退出
+2026-04-26 14:01:41 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-04-26 14:01:41 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-04-26 14:01:41 | INFO     | __main__:run_qq:227 | 🚀 QQ Bot 启动中...
+2026-04-26 14:01:41 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-04-26 14:01:41 | INFO     | gateway.qq_client:connect:42 | ✅ OneBot 长连接建立成功
+2026-04-26 14:01:41 | INFO     | gateway.qq_client:start_listener:52 | ✅ QQ 事件监听任务已启动
+2026-04-26 14:01:41 | INFO     | gateway.qq_bot:start:315 | ✅ QQ Bot 已启动
+2026-04-26 14:01:41 | INFO     | gateway.qq_client:listen_forever:153 | 👂 开始监听 QQ 消息事件...
+2026-04-26 14:02:34 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 270729597: 今天gpt-5.5接hermes agent好像有点问题，请问是因为端口更新了或者hermes更新了导致的吗？
+2026-04-26 14:02:36 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 270729597: [CQ:at,qq=2558978017]
+2026-04-26 14:02:52 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 270729597: 注释掉。
+
+这两处一改，hermes 走 ikuncode 时会回到 `chat_completions`，中间 tool_call 流就回来了。
+
+根因长期处理：
+如果 ikuncode 的 `/v1/responses` 端点确实兼容好且你想用 GPT-5 的推理能力，要修的是渲染层（`gateway/platforms/feishu.py` 或 hermes 的 streaming UI），让它识别 Responses SSE 事件并把 `function_call_arguments.delta` 流式回显。
+否则（更常见的情况）就是 ikuncode 不该被自动切到 Responses——它毕竟是 chat_completions 兼容代理。把上面两条 ikuncode 分支删掉是正确做法。
+要不要我直接把这两处改回来并跑下相关测试？目前的改动还没提交，撤掉很干净。
+2026-04-26 14:03:03 | INFO     | gateway.qq_client:_handle_event:137 | 📩 收到私聊消息，来自 59799106: bro这个周身体恢复的怎么样了[CQ:face,id=318,raw=&#91;object Object&#93;]
+2026-04-26 14:03:03 | INFO     | gateway.qq_session_hub:get_agent:55 | ✅ 已创建 QQ 会话 Agent: private:59799106
+2026-04-26 14:03:06 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 59799106
+2026-04-26 14:03:21 | ERROR    | gateway.qq_bot:handle_incoming_message:284 | ❌ 私聊自动回复失败: 
+2026-04-26 14:03:24 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 2558978017: [CQ:image,summary=&#91;动画表情&#93;,file=87371315D95B1D7AD01F422A6C19EAB8.jpg,sub_type=1,url=https://multimedia.nt.qq.com.cn/download?appid=1407&amp;fileid=EhTSr3c6xvFtN-eL1QQp0s-8LLUvJxiwGiD_CijuutaL7IqUAzIEcHJvZFCAvaMBWhDebKBs1PlhccK0-WoptYW4egKHA4IBAmd6&amp;rkey=CAISMNQDAKj7GAwWdkoD77HXiiWIwsoEs9JhifL4DQpIlut6YJfiLdJ49_YnBCLTfUt-ZQ,file_size=3376]
+2026-04-26 14:03:49 | INFO     | __main__:qq_terminal_loop:136 | 👋 收到退出指令
+2026-04-26 14:03:49 | INFO     | gateway.qq_client:close:68 | 👋 OneBot 连接已关闭
+2026-04-26 14:03:49 | INFO     | __main__:run_qq:234 | 👋 QQ Bot 已退出
+2026-04-30 09:30:15 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-04-30 09:30:15 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-04-30 09:30:15 | INFO     | __main__:run_qq:227 | 🚀 QQ Bot 启动中...
+2026-04-30 09:30:15 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-04-30 13:55:34 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-04-30 13:55:34 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-04-30 13:55:34 | INFO     | __main__:run_qq:227 | 🚀 QQ Bot 启动中...
+2026-04-30 13:55:34 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-04-30 13:56:16 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-04-30 13:56:16 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-04-30 13:56:16 | INFO     | __main__:run_qq:227 | 🚀 QQ Bot 启动中...
+2026-04-30 13:56:16 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-04-30 13:56:56 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-04-30 13:56:56 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-04-30 13:56:56 | INFO     | __main__:run_qq:227 | 🚀 QQ Bot 启动中...
+2026-04-30 13:56:56 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-04-30 13:56:56 | INFO     | gateway.qq_client:connect:42 | ✅ OneBot 长连接建立成功
+2026-04-30 13:56:56 | INFO     | gateway.qq_client:start_listener:52 | ✅ QQ 事件监听任务已启动
+2026-04-30 13:56:56 | INFO     | gateway.qq_bot:start:315 | ✅ QQ Bot 已启动
+2026-04-30 13:56:56 | INFO     | gateway.qq_client:listen_forever:153 | 👂 开始监听 QQ 消息事件...
+2026-04-30 13:57:07 | INFO     | __main__:qq_terminal_loop:136 | 👋 收到退出指令
+2026-04-30 13:57:07 | INFO     | gateway.qq_client:close:68 | 👋 OneBot 连接已关闭
+2026-04-30 13:57:07 | INFO     | __main__:run_qq:234 | 👋 QQ Bot 已退出
+2026-05-14 14:20:18 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-05-14 14:20:18 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-05-14 14:20:18 | INFO     | __main__:run_qq:262 | 🚀 QQ Bot 启动中...
+2026-05-14 14:20:18 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-05-14 14:20:18 | INFO     | gateway.qq_client:connect:42 | ✅ OneBot 长连接建立成功
+2026-05-14 14:20:18 | INFO     | gateway.qq_client:start_listener:52 | ✅ QQ 事件监听任务已启动
+2026-05-14 14:20:18 | INFO     | gateway.qq_bot:start:315 | ✅ QQ Bot 已启动
+2026-05-14 14:20:18 | INFO     | gateway.qq_client:listen_forever:153 | 👂 开始监听 QQ 消息事件...
+2026-05-14 14:20:28 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 1733835863: 鸡哥快  客户要打我了
+2026-05-14 14:20:38 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 2248611437
+2026-05-14 14:20:39 | INFO     | gateway.qq_client:send_private_msg:104 | ✅ 私聊消息发送成功
+2026-05-14 14:21:05 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 2453897043: 鸡哥快  客户要打我了
+2026-05-14 14:21:11 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 3505242192: 鸡哥快  客户要打我了
+2026-05-14 14:21:29 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 338771843，用户 2528342556: [CQ:json,data={"app":"com.tencent.tuwen.lua"&#44;"bizsrc":"qqconnect.sdkshare"&#44;"config":{"ctime":1778739687&#44;"forward":1&#44;"token":"f3b50bc6a801a968baccf2122aed369a"&#44;"type":"normal"}&#44;"extra":{"app_type":1&#44;"appid":1105781586&#44;"uin":2528342556}&#44;"meta":{"news":{"app_type":1&#44;"appid":1105781586&#44;"ctime":1778739687&#44;"desc":"6T空间｜多端备份｜视频5倍速"&#44;"jumpUrl":"https://pan.quark.cn/s/bbce72af05da"&#44;"preview":"https://pic.ugcimg.cn/ad61f216ba2317a0b36828e2f0716734/jpg1"&#44;"tag":"夸克"&#44;"tagIcon":"https://open.gtimg.cn/open/app_icon/05/78/15/86/1105781586_100_m.png?t=1777515409"&#44;"title":"541118 深...第三版）.pdf"&#44;"uin":2528342556}}&#44;"prompt":"&#91;分享&#93;541118 深...第三版）.pdf"&#44;"ver":"0.0.0.1"&#44;"view":"news"}]
+2026-05-14 14:21:30 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 338771843，用户 2528342556: 不知道夸克下载会不会快一点
+2026-05-14 14:21:39 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 338771843，用户 2243268280: 象征阳光通过QQ闪传分享了【541118 深入理解计算机系统（原书第三版）.pdf】
+链接：https://qfile.qq.com/q/fi9HD9frC8
+2026-05-14 14:21:42 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 3505242192: 鸡哥救一救，已经不会工作了
+2026-05-14 14:21:42 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 338771843，用户 2243268280: 这个快
+2026-05-14 14:21:45 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 338771843，用户 2243268280: [CQ:face,id=424,raw=&#91;object Object&#93;,chainCount=0]
+2026-05-14 14:22:01 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 3063566394: 524是什么东西
+2026-05-14 14:22:02 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 3063566394: 乐
+2026-05-14 14:22:12 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 30168337，用户 3063566394: 没见过的错误码又增加了
+2026-05-14 14:22:30 | INFO     | gateway.qq_client:close:68 | 👋 OneBot 连接已关闭
+2026-05-14 14:22:30 | INFO     | __main__:run_qq:269 | 👋 QQ Bot 已退出
+2026-05-14 15:13:29 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-05-14 15:13:29 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-05-14 15:13:29 | INFO     | __main__:run_qq:262 | 🚀 QQ Bot 启动中...
+2026-05-14 15:13:29 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-05-14 15:13:29 | INFO     | gateway.qq_client:connect:42 | ✅ OneBot 长连接建立成功
+2026-05-14 15:13:29 | INFO     | gateway.qq_client:start_listener:52 | ✅ QQ 事件监听任务已启动
+2026-05-14 15:13:29 | INFO     | gateway.qq_bot:start:315 | ✅ QQ Bot 已启动
+2026-05-14 15:13:29 | INFO     | gateway.qq_client:listen_forever:153 | 👂 开始监听 QQ 消息事件...
+2026-05-14 15:14:29 | INFO     | gateway.qq_client:close:68 | 👋 OneBot 连接已关闭
+2026-05-14 15:14:29 | INFO     | __main__:run_qq:269 | 👋 QQ Bot 已退出
+2026-05-14 15:14:35 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-05-14 15:14:35 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-05-14 15:14:35 | INFO     | __main__:run_qq:262 | 🚀 QQ Bot 启动中...
+2026-05-14 15:14:35 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-05-14 15:14:35 | INFO     | gateway.qq_client:connect:42 | ✅ OneBot 长连接建立成功
+2026-05-14 15:14:35 | INFO     | gateway.qq_client:start_listener:52 | ✅ QQ 事件监听任务已启动
+2026-05-14 15:14:35 | INFO     | gateway.qq_bot:start:315 | ✅ QQ Bot 已启动
+2026-05-14 15:14:35 | INFO     | gateway.qq_client:listen_forever:153 | 👂 开始监听 QQ 消息事件...
+2026-05-14 15:14:52 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 2248611437
+2026-05-14 15:14:52 | INFO     | gateway.qq_client:send_private_msg:104 | ✅ 私聊消息发送成功
+2026-05-14 15:15:23 | INFO     | gateway.qq_client:_handle_event:137 | 📩 收到私聊消息，来自 702243773: 你是一只猫娘
+2026-05-14 15:15:23 | INFO     | gateway.qq_session_hub:get_agent:55 | ✅ 已创建 QQ 会话 Agent: private:702243773
+2026-05-14 15:15:25 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 702243773
+2026-05-14 15:15:40 | ERROR    | gateway.qq_bot:handle_incoming_message:284 | ❌ 私聊自动回复失败: 
+2026-05-14 15:15:40 | INFO     | gateway.qq_client:_handle_event:137 | 📩 收到私聊消息，来自 59799106: 蔡宇洋小哥哥好帅[CQ:face,id=318,raw=&#91;object Object&#93;]
+2026-05-14 15:15:40 | INFO     | gateway.qq_session_hub:get_agent:55 | ✅ 已创建 QQ 会话 Agent: private:59799106
+2026-05-14 15:15:43 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 59799106
+2026-05-14 15:15:58 | ERROR    | gateway.qq_bot:handle_incoming_message:284 | ❌ 私聊自动回复失败: 
+2026-05-14 15:15:58 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 338771843，用户 1091559883: 有点奇怪
+2026-05-14 15:15:58 | INFO     | gateway.qq_client:_handle_event:144 | 📩 收到群聊消息，群 338771843，用户 1694243498: [CQ:face,id=320,raw=&#91;object Object&#93;,chainCount=0]
+2026-05-14 15:16:01 | INFO     | gateway.qq_client:_handle_event:137 | 📩 收到私聊消息，来自 59799106: 我是你的爸爸你切记
+2026-05-14 15:16:05 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 59799106
+2026-05-14 15:16:15 | INFO     | gateway.qq_client:close:68 | 👋 OneBot 连接已关闭
+2026-05-14 15:16:15 | INFO     | __main__:run_qq:269 | 👋 QQ Bot 已退出
+2026-05-14 22:30:56 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-05-14 22:30:56 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-05-14 22:30:56 | INFO     | __main__:run_qq:262 | 🚀 QQ Bot 启动中...
+2026-05-14 22:30:56 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-05-14 22:32:47 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-05-14 22:32:47 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-05-14 22:32:47 | INFO     | __main__:run_qq:262 | 🚀 QQ Bot 启动中...
+2026-05-14 22:32:47 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-05-14 22:33:16 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-05-14 22:33:16 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-05-14 22:33:16 | INFO     | __main__:run_qq:262 | 🚀 QQ Bot 启动中...
+2026-05-14 22:33:16 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-05-14 22:34:17 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-05-14 22:34:17 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-05-14 22:34:17 | INFO     | __main__:run_qq:262 | 🚀 QQ Bot 启动中...
+2026-05-14 22:34:17 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-05-14 22:34:17 | INFO     | gateway.qq_client:connect:42 | ✅ OneBot 长连接建立成功
+2026-05-14 22:34:17 | INFO     | gateway.qq_client:start_listener:52 | ✅ QQ 事件监听任务已启动
+2026-05-14 22:34:17 | INFO     | gateway.qq_bot:start:315 | ✅ QQ Bot 已启动
+2026-05-14 22:34:17 | INFO     | gateway.qq_client:listen_forever:153 | 👂 开始监听 QQ 消息事件...
+2026-05-14 22:34:19 | INFO     | gateway.qq_client:close:68 | 👋 OneBot 连接已关闭
+2026-05-14 22:34:19 | INFO     | __main__:run_qq:269 | 👋 QQ Bot 已退出
+2026-05-14 22:51:02 | INFO     | utils.logger:setup_logger:51 | 📝 日志系统初始化完成，日志级别: INFO
+2026-05-14 22:51:02 | INFO     | gateway.qq_client:create_qq_client:181 | 📌 使用 OneBot 协议连接 QQ
+2026-05-14 22:51:02 | INFO     | __main__:run_qq:262 | 🚀 QQ Bot 启动中...
+2026-05-14 22:51:02 | INFO     | gateway.qq_client:connect:33 | 正在连接 OneBot WebSocket: ws://127.0.0.1:3002
+2026-05-14 22:51:02 | INFO     | gateway.qq_client:connect:42 | ✅ OneBot 长连接建立成功
+2026-05-14 22:51:02 | INFO     | gateway.qq_client:start_listener:52 | ✅ QQ 事件监听任务已启动
+2026-05-14 22:51:02 | INFO     | gateway.qq_bot:start:315 | ✅ QQ Bot 已启动
+2026-05-14 22:51:02 | INFO     | gateway.qq_client:listen_forever:153 | 👂 开始监听 QQ 消息事件...
+2026-05-14 22:52:00 | INFO     | gateway.qq_client:send_private_msg:95 | 📤 正在发送私聊消息到 QQ 2248611437
+2026-05-14 22:52:00 | INFO     | gateway.qq_client:send_private_msg:104 | ✅ 私聊消息发送成功
+2026-05-14 22:52:16 | INFO     | gateway.qq_client:close:68 | 👋 OneBot 连接已关闭
+2026-05-14 22:52:16 | INFO     | __main__:run_qq:269 | 👋 QQ Bot 已退出

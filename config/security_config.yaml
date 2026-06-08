@@ -1,0 +1,79 @@
+﻿file_security:
+  max_read_bytes: 1048576
+
+shell_security:
+  enabled: true
+  timeout_seconds: 10
+  allowed_commands:
+    - ls
+    - pwd
+    - echo
+    - cat
+    - grep
+    - find
+  blocked_keywords:
+    - "rm -rf"
+    - "sudo"
+    - "chmod"
+    - "chown"
+    - "wget"
+    - "curl"
+    - "mv "
+    - "cp "
+    - "dd "
+    - "shutdown"
+    - "reboot"
+    - ":(){:|:&};:"
+
+web_security:
+  enabled: true
+  timeout_seconds: 12
+  max_results: 5
+  default_provider: "auto"
+  allowed_domains: []
+  blocked_domains:
+    - "localhost"
+    - "127.0.0.1"
+    - "0.0.0.0"
+    - "::1"
+
+experimental_local_file_security:
+  enabled: true
+  max_read_bytes: 1048576
+  max_entries: 200
+  allowed_roots:
+     - "C:\\Users\\ASUS\\OpenClawTest"
+
+  blocked_extensions:
+    - ".exe"
+    - ".dll"
+    - ".sys"
+    - ".bat"
+    - ".ps1"
+
+experimental_powershell_security:
+  enabled: true
+  executable: "auto"
+  timeout_seconds: 8
+  allowed_roots:
+     - "C:\\Users\\ASUS\\OpenClawTest"
+  allowed_command_prefixes:
+    - "Get-ChildItem"
+    - "Get-Location"
+    - "Get-Content"
+    - "Select-String"
+    - "Test-Path"
+  blocked_keywords:
+    - "Remove-Item"
+    - "Set-Content"
+    - "Add-Content"
+    - "New-Item"
+    - "Copy-Item"
+    - "Move-Item"
+    - "Rename-Item"
+    - "Invoke-WebRequest"
+    - "Invoke-RestMethod"
+    - "Invoke-Expression"
+    - "Start-Process"
+    - "Stop-Process"
+    - ".ps1"

@@ -1,0 +1,32 @@
+﻿enabled_tools:
+  - read_file
+  - write_file
+  - list_directory
+  - create_directory
+  - delete_file
+  - get_current_time
+  - calculate
+  - manage_todo
+  - run_shell_command
+  - search_workspace_text
+  - count_text_lines
+  - count_words
+  - search_web
+  - fetch_webpage_text
+  - list_local_directory
+  - read_local_file
+  - run_powershell_command
+  - delegate_task
+  - schedule_task
+  - list_scheduled_tasks
+  - cancel_scheduled_task
+  - generate_image
+  - generate_file
+
+experimental_tools:
+  local_file:
+    - list_local_directory
+    - read_local_file
+
+  powershell:
+    - run_powershell_command

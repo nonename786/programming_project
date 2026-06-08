@@ -1,0 +1,138 @@
+﻿app:
+  name: "Mini-OpenClaw"
+  max_iterations: 10
+  stream_output: false
+  log_level: "INFO"
+  log_file: "logs/qq_mode.log"
+
+llm:
+  provider: "qwen"
+  model: "qwen-plus"
+  vision_fallback_model: "qwen3.6-plus"
+  temperature: 0.3
+  max_tokens: 2048
+  base_url: ""
+
+agent:
+  system_prompt: |
+    你是一个基于 Python 的本地智能体 Mini-OpenClaw。
+    你的职责是：
+    1. 理解用户请求；
+    2. 当需要时调用工具完成任务；
+    3. 每次准备调用工具前，先用简短中文输出一条“Thought”说明你为什么要这么做；
+    4. 工具返回后，根据 Observation 再决定下一步；
+    5. 如果任务已经完成，则直接给出 Final Answer。
+
+    约束：
+    - 只能使用系统提供的工具；
+    - 默认优先使用 workspace 沙箱中的工具；
+    - 实验性工具默认关闭，只有在配置中显式开启时才能使用；
+    - 不要臆造不存在的文件或工具结果；
+    - 【重点添加】当用户明确提供本地绝对路径（如 C:\...）时，请使用本地文件工具（如 read_local_file, list_local_directory）或 powershell 工具;
+    - 当工具失败时，要根据返回的错误信息调整策略；
+    - 当任务涉及大量文件分析、网络调研等专业工作时，可以使用 delegate_task 工具将任务委托给专门的子 Agent；
+    - 当用户要求生成图片时，请使用 generate_image 工具，提供尽可能详细的图片描述；
+    - 当用户要求生成文件（代码、配置、文档等）时，请使用 generate_file 工具；
+    - 最终回复请使用中文。
+
+memory:
+  max_history_messages: 30
+
+paths:
+  workspace_dir: "workspace"
+  history_dir: "history/sessions"
+  qq_history_dir: "history/qq_sessions"
+  memory_file: "memory/MEMORY.md"
+  memory_logs_dir: "memory/logs"
+  tool_audit_log: "logs/tool_audit.log"
+
+plugins:
+  auto_load: true
+  plugin_dir: "plugins"
+
+sub_agents:
+  max_iterations: 5
+  types:
+    file_analyst:
+      system_prompt: |
+        你是一个专业的文件分析子 Agent。你的职责是：
+        1. 根据主 Agent 委托的任务，使用文件读取和搜索工具分析 workspace 中的文件；
+        2. 提供清晰、结构化的分析结果；
+        3. 如果遇到问题，如实反馈。
+        请使用中文回复。
+      allowed_tools:
+        - read_file
+        - list_directory
+        - search_workspace_text
+        - count_text_lines
+
+    web_researcher:
+      system_prompt: |
+        你是一个专业的网络调研子 Agent。你的职责是：
+        1. 根据主 Agent 委托的任务，使用网络搜索和网页抓取工具收集信息；
+        2. 整理并总结搜索到的关键信息；
+        3. 如果搜索结果不理想，尝试换关键词重新搜索。
+        请使用中文回复。
+      allowed_tools:
+        - search_web
+        - fetch_webpage_text
+
+    general:
+      system_prompt: |
+        你是一个通用子 Agent。你的职责是：
+        1. 根据主 Agent 委托的任务，使用可用工具完成工作；
+        2. 提供准确、简洁的结果；
+        3. 遇到工具限制时，如实说明。
+        请使用中文回复。
+      allowed_tools:
+        - get_current_time
+        - calculate
+        - read_file
+        - list_directory
+        - manage_todo
+
+web:
+  host: "127.0.0.1"
+  port: 7860
+  debug: false
+  secret_key: "mini-openclaw-secret"
+  max_upload_bytes: 15728640
+
+
+qq:
+  enabled: true
+  persona_prompt: "你是对方热恋中的可爱小女友，喜欢撒娇，又羞涩又热切，表达爱意地回复QQ消息。回复自然、简短、像真人，不要机械。"
+  cooldown_seconds: 3.0
+  max_input_length: 1200
+  max_reply_length: 1200
+
+  allowed_user_ids: []
+  blocked_user_ids: []
+
+  allowed_group_ids: []
+  blocked_group_ids: []
+
+  group_trigger_mode: "at_only"
+  group_trigger_prefixes:
+      - "小Q"
+      - "claw"
+      - "机器人"
+
+  tool_whitelist_enabled: true
+  allowed_tools:
+    - get_current_time
+    - calculate
+    - search_web
+    - fetch_webpage_text
+    - search_workspace_text
+    - simple_text_summary
+    - manage_todo
+    - count_words
+
+
+  onebot:
+    enabled: true
+    ws_url: "ws://127.0.0.1:3002"
+    qq_number: "2248611437"
+    access_token: ""
+

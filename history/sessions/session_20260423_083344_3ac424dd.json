@@ -1,0 +1,93 @@
+{
+  "session_id": "3ac424dd",
+  "model": "qwen-plus",
+  "start_time": "2026-04-23 08:32:48",
+  "end_time": "2026-04-23 08:33:44",
+  "tool_calls_count": 2,
+  "tool_records": [
+    {
+      "tool_name": "get_current_time",
+      "arguments": {},
+      "result": {
+        "success": true,
+        "content": "2026-04-23 08:32:57",
+        "error": null
+      },
+      "time": "2026-04-23 08:32:57"
+    },
+    {
+      "tool_name": "create_directory",
+      "arguments": {
+        "path": "notes"
+      },
+      "result": {
+        "success": true,
+        "content": "目录已创建：notes",
+        "error": null
+      },
+      "time": "2026-04-23 08:33:21"
+    }
+  ],
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个基于 Python 的本地智能体 Mini-OpenClaw。\n你的职责是：\n1. 理解用户请求；\n2. 当需要时调用工具完成任务；\n3. 每次准备调用工具前，先用简短中文输出一条“Thought”说明你为什么要这么做；\n4. 工具返回后，根据 Observation 再决定下一步；\n5. 如果任务已经完成，则直接给出 Final Answer。\n\n约束：\n- 只能使用系统提供的工具；\n- 文件操作只能发生在 workspace 目录；\n- 不要臆造不存在的文件或工具结果；\n- 当工具失败时，要根据返回的错误信息调整策略；\n- 最终回复请使用中文。\n\n\n以下是长期记忆，请在后续对话中参考：\n# MEMORY"
+    },
+    {
+      "role": "user",
+      "content": "现在几点了？"
+    },
+    {
+      "role": "assistant",
+      "content": "Thought: 我需要调用获取当前时间的工具来回答这个问题。\n\n",
+      "tool_calls": [
+        {
+          "id": "call_2777ab2752a3442585ac87",
+          "type": "function",
+          "function": {
+            "name": "get_current_time",
+            "arguments": "{}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_2777ab2752a3442585ac87",
+      "name": "get_current_time",
+      "content": "{\n  \"success\": true,\n  \"content\": \"2026-04-23 08:32:57\",\n  \"error\": null\n}"
+    },
+    {
+      "role": "assistant",
+      "content": "现在是 2026 年 4 月 23 日上午 8 点 32 分 57 秒。"
+    },
+    {
+      "role": "user",
+      "content": "请在 workspace 里创建 notes 目录"
+    },
+    {
+      "role": "assistant",
+      "content": "Thought: 我需要使用 create_directory 工具在 workspace 中创建名为 \"notes\" 的目录。\n\n\n",
+      "tool_calls": [
+        {
+          "id": "call_678dbcbc710740a1abef1c",
+          "type": "function",
+          "function": {
+            "name": "create_directory",
+            "arguments": "{\"path\": \"notes\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_678dbcbc710740a1abef1c",
+      "name": "create_directory",
+      "content": "{\n  \"success\": true,\n  \"content\": \"目录已创建：notes\",\n  \"error\": null\n}"
+    },
+    {
+      "role": "assistant",
+      "content": "已在 workspace 中成功创建 `notes` 目录。"
+    }
+  ]
+}

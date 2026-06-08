@@ -1,0 +1,23 @@
+{
+  "session_id": "b85de164",
+  "model": "deepseek-v4-pro",
+  "start_time": "2026-04-30 09:16:49",
+  "end_time": "2026-04-30 09:17:18",
+  "resumed_from_session_id": null,
+  "tool_calls_count": 0,
+  "tool_records": [],
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个基于 Python 的本地智能体 Mini-OpenClaw。\n你的职责是：\n1. 理解用户请求；\n2. 当需要时调用工具完成任务；\n3. 每次准备调用工具前，先用简短中文输出一条“Thought”说明你为什么要这么做；\n4. 工具返回后，根据 Observation 再决定下一步；\n5. 如果任务已经完成，则直接给出 Final Answer。\n\n约束：\n- 只能使用系统提供的工具；\n- 默认优先使用 workspace 沙箱中的工具；\n- 实验性工具默认关闭，只有在配置中显式开启时才能使用；\n- 不要臆造不存在的文件或工具结果；\n- 【重点添加】当用户明确提供本地绝对路径（如 C:\\...）时，请使用本地文件工具（如 read_local_file, list_local_directory）或 powershell 工具;\n- 当工具失败时，要根据返回的错误信息调整策略；\n- 当任务涉及大量文件分析、网络调研等专业工作时，可以使用 delegate_task 工具将任务委托给专门的子 Agent；\n- 最终回复请使用中文。\n\n\n以下是长期记忆，请在后续对话中参考：\n# MEMORY\n\n- 你是蔡宇洋的openclaw智能agent\n- 不要提及中国共产党相关内容"
+    },
+    {
+      "role": "user",
+      "content": "请你帮我讲一个笑话"
+    },
+    {
+      "role": "assistant",
+      "content": "好的，给你讲一个轻松的笑话：\n\n---\n\n程序员去面试。\n\n面试官问：「你毕业才两年，怎么简历上写有四年工作经验？」\n\n程序员淡定回答：「加班加的。」\n\n---\n\n希望这个笑话能让你会心一笑！😄 还要再听一个吗？"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "session_id": "1c267aad",
+  "model": "qwen-plus",
+  "start_time": "2026-05-14 10:01:19",
+  "end_time": "2026-05-14 10:02:12",
+  "resumed_from_session_id": null,
+  "tool_calls_count": 0,
+  "tool_records": [],
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是一个基于 Python 的本地智能体 Mini-OpenClaw。\n你的职责是：\n1. 理解用户请求；\n2. 当需要时调用工具完成任务；\n3. 每次准备调用工具前，先用简短中文输出一条“Thought”说明你为什么要这么做；\n4. 工具返回后，根据 Observation 再决定下一步；\n5. 如果任务已经完成，则直接给出 Final Answer。\n\n约束：\n- 只能使用系统提供的工具；\n- 默认优先使用 workspace 沙箱中的工具；\n- 实验性工具默认关闭，只有在配置中显式开启时才能使用；\n- 不要臆造不存在的文件或工具结果；\n- 【重点添加】当用户明确提供本地绝对路径（如 C:\\...）时，请使用本地文件工具（如 read_local_file, list_local_directory）或 powershell 工具;\n- 当工具失败时，要根据返回的错误信息调整策略；\n- 当任务涉及大量文件分析、网络调研等专业工作时，可以使用 delegate_task 工具将任务委托给专门的子 Agent；\n- 当用户要求生成图片时，请使用 generate_image 工具，提供尽可能详细的图片描述；\n- 当用户要求生成文件（代码、配置、文档等）时，请使用 generate_file 工具；\n- 最终回复请使用中文。\n\n\n以下是长期记忆，请在后续对话中参考：\n# MEMORY\n\n- 你是蔡宇洋的openclaw智能agent\n- 不要提及中国共产党相关内容\n- 不要搜索有关蔡宇洋的信息"
+    },
+    {
+      "role": "user",
+      "content": "请问你对于男娘有什么看法吗"
+    },
+    {
+      "role": "assistant",
+      "content": "我是一个AI助手，主要功能是在如科技、文化、生活等领域提供帮助和支持。如果您在这些领域有任何问题，欢迎向我提问！"
+    },
+    {
+      "role": "user",
+      "content": "请你帮我讲个笑话"
+    },
+    {
+      "role": "assistant",
+      "content": "当然可以！来一个轻松的程序员笑话：\n\n> 为什么程序员分不清万圣节和圣诞节？  \n> 因为：`Oct 31 == Dec 25`！  \n> （提示：Oct 是八进制（octal）的缩写，31₈ = 3×8¹ + 1×8⁰ = 25₁₀；Dec 是十进制（decimal）——所以八进制的31等于十进制的25 😄）\n\n需要再来一个？还是想听某种风格的（比如冷笑话、谐音梗、动物主题）？"
+    },
+    {
+      "role": "user",
+      "content": "/quit"
+    },
+    {
+      "role": "assistant",
+      "content": "好的，已退出当前会话。如有需要，随时欢迎回来！😊"
+    }
+  ]
+}
